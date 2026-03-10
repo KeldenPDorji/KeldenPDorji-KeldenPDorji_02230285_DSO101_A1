@@ -1,10 +1,10 @@
 services:
-  # Backend Web Service
+  # Backend Web Service — builds from Dockerfile on every git push
   - type: web
     name: be-todo
-    runtime: image
-    image:
-      url: docker.io/sevenkels/be-todo:02230285
+    env: docker
+    dockerfilePath: ./todo-app/backend/Dockerfile
+    dockerContext: ./todo-app/backend
     plan: free
     region: singapore
     autoDeploy: true
@@ -24,12 +24,12 @@ services:
       - key: PORT
         value: "5000"
 
-  # Frontend Web Service
+  # Frontend Web Service — builds from Dockerfile on every git push
   - type: web
     name: fe-todo
-    runtime: image
-    image:
-      url: docker.io/sevenkels/fe-todo:02230285
+    env: docker
+    dockerfilePath: ./todo-app/frontend/Dockerfile
+    dockerContext: ./todo-app/frontend
     plan: free
     region: singapore
     autoDeploy: true
