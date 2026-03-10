@@ -214,18 +214,17 @@ A second **Web Service** is created using the frontend image.
 
 ## Part B — Automated Git-Based Deployment (Blueprint)
 
-Unlike Part A (which uses pre-built Docker Hub images), Part B configures Render to **build Docker images directly from the repository's Dockerfiles** on every `git push`. This is defined in the `render.yaml` Blueprint file at the repository root.
+A `render.yaml` Blueprint file at the repository root defines the complete multi-service deployment. Every `git push` to the `main` branch automatically triggers a Blueprint sync and redeploys all services.
 
 ### render.yaml (structure overview)
 
 ```yaml
 services:
-  # Backend — Render builds from Dockerfile on every git push
   - type: web
     name: be-todo
-    env: docker
-    dockerfilePath: ./todo-app/backend/Dockerfile
-    dockerContext: ./todo-app/backend
+    runtime: image
+    image:
+      url: docker.io/sevenkels/be-todo:02230285
     plan: free
     region: singapore
     autoDeploy: true
@@ -236,12 +235,11 @@ services:
         value: 5000
       # Additional DB credentials are set via the Render dashboard
 
-  # Frontend — Render builds from Dockerfile on every git push
   - type: web
     name: fe-todo
-    env: docker
-    dockerfilePath: ./todo-app/frontend/Dockerfile
-    dockerContext: ./todo-app/frontend
+    runtime: image
+    image:
+      url: docker.io/sevenkels/fe-todo:02230285
     plan: free
     region: singapore
     autoDeploy: true
@@ -249,8 +247,6 @@ services:
       - key: REACT_APP_API_URL
         value: https://be-todo-ppwq.onrender.com
 ```
-
-> **Key difference from Part A:** Instead of pulling pre-built images from Docker Hub (`runtime: image`), Part B uses `env: docker` with `dockerfilePath` so that Render **clones the repo and builds the image from the Dockerfile** on every deployment.
 
 ### Blueprint Setup Steps
 
