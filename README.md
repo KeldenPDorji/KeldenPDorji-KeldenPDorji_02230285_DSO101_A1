@@ -2,7 +2,7 @@
 
 > **Course:** DSO101 — Continuous Integration and Continuous Deployment  
 > **Programme:** Bachelor of Engineering in Software Engineering (SWE)  
-> **GitHub Repository:** https://github.com/KeldenPDorji/KeldenPDorji-KeldenPDorji_02230285_DSO101_A1
+> **GitHub Repository:** https://github.com/KeldenPDorji/KeldenPDorji_02230285_DSO101_A1
 
 ---
 
