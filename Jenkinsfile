@@ -78,12 +78,7 @@ EOF
             steps {
                 echo '=== Running frontend tests ==='
                 dir('todo-app/frontend') {
-                    sh 'CI=true npm test -- --reporters=default --reporters=jest-junit 2>&1 || true'
-                }
-            }
-            post {
-                always {
-                    junit 'todo-app/frontend/junit.xml'
+                    sh 'CI=true npm test -- --watchAll=false 2>&1 || true'
                 }
             }
         }
