@@ -19,8 +19,8 @@ pipeline {
             steps {
                 echo '=== Installing backend dependencies ==='
                 dir('todo-app/backend') {
-                    sh 'npm install'
-                    sh 'npm install --save-dev jest jest-junit'
+                    sh '/usr/local/bin/npm install'
+                    sh '/usr/local/bin/npm install --save-dev jest jest-junit'
                 }
             }
         }
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 echo '=== Installing frontend dependencies ==='
                 dir('todo-app/frontend') {
-                    sh 'npm install'
+                    sh '/usr/local/bin/npm install'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 echo '=== Building React frontend ==='
                 dir('todo-app/frontend') {
-                    sh 'npm run build'
+                    sh '/usr/local/bin/npm run build'
                 }
             }
         }
@@ -59,7 +59,7 @@ const config = {
 module.exports = config;
 EOF
                     '''
-                    sh 'npm test -- --ci --reporters=default --reporters=jest-junit'
+                    sh '/usr/local/bin/npm test -- --ci --reporters=default --reporters=jest-junit'
                 }
             }
             post {
@@ -74,7 +74,7 @@ EOF
             steps {
                 echo '=== Running frontend tests ==='
                 dir('todo-app/frontend') {
-                    sh 'CI=true npm test -- --reporters=default --reporters=jest-junit 2>&1 || true'
+                    sh 'CI=true /usr/local/bin/npm test -- --reporters=default --reporters=jest-junit 2>&1 || true'
                 }
             }
             post {
