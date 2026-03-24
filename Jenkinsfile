@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    environment {
+        PATH = "/Users/keldendrac/.nvm/versions/node/v24.11.1/bin:${env.PATH}"
+    }
+    
     stages {
         // Stage 1: Checkout Code
         stage('Checkout') {
@@ -19,8 +23,8 @@ pipeline {
             steps {
                 echo '=== Installing backend dependencies ==='
                 dir('todo-app/backend') {
-                    sh '/Users/keldendrac/.nvm/versions/node/v24.11.1/bin/npm install'
-                    sh '/Users/keldendrac/.nvm/versions/node/v24.11.1/bin/npm install --save-dev jest jest-junit'
+                    sh 'npm install'
+                    sh 'npm install --save-dev jest jest-junit'
                 }
             }
         }
@@ -29,7 +33,7 @@ pipeline {
             steps {
                 echo '=== Installing frontend dependencies ==='
                 dir('todo-app/frontend') {
-                    sh '/Users/keldendrac/.nvm/versions/node/v24.11.1/bin/npm install'
+                    sh 'npm install'
                 }
             }
         }
@@ -39,7 +43,7 @@ pipeline {
             steps {
                 echo '=== Building React frontend ==='
                 dir('todo-app/frontend') {
-                    sh '/Users/keldendrac/.nvm/versions/node/v24.11.1/bin/npm run build'
+                    sh 'npm run build'
                 }
             }
         }
@@ -59,7 +63,7 @@ const config = {
 module.exports = config;
 EOF
                     '''
-                    sh '/Users/keldendrac/.nvm/versions/node/v24.11.1/bin/npm test -- --ci --reporters=default --reporters=jest-junit'
+                    sh 'npm test -- --ci --reporters=default --reporters=jest-junit'
                 }
             }
             post {
@@ -74,7 +78,7 @@ EOF
             steps {
                 echo '=== Running frontend tests ==='
                 dir('todo-app/frontend') {
-                    sh 'CI=true /Users/keldendrac/.nvm/versions/node/v24.11.1/bin/npm test -- --reporters=default --reporters=jest-junit 2>&1 || true'
+                    sh 'CI=true npm test -- --reporters=default --reporters=jest-junit 2>&1 || true'
                 }
             }
             post {
@@ -98,19 +102,26 @@ EOF
         // Stage 7: Push to Docker Hub
         stage('Push to Docker Hub') {
             steps {
-                echo '=== Pushing images to Docker Hub (optional) ==='
-                echo 'Configure Docker Hub credentials in Jenkins to enable pushing'
-                echo 'Credentials ID needed: docker-hub-username and docker-hub-password'
+                echo '=== Pushing images to Docker Hub ==='
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        sh 'docker tag todo-backend:latest sevenkels/be-todo:a2'
+                        sh 'docker tag todo-frontend:latest sevenkels/fe-todo:a2'
+                        sh 'docker push sevenkels/be-todo:a2'
+                        sh 'docker push sevenkels/fe-todo:a2'
+                    }
+                }
             }
         }
         
-        // Stage 8: Deploy (Optional - Direct Server Deployment)
+        // Stage 8: Deploy
         stage('Deploy') {
             steps {
                 echo '=== Deployment stage ==='
-                echo 'Configure with your deployment script'
-                // Add your deployment logic here
-                // Example: Deploy to Render, AWS, or direct server
+                echo 'Images pushed to Docker Hub successfully!'
+                echo 'Backend: sevenkels/be-todo:a2'
+                echo 'Frontend: sevenkels/fe-todo:a2'
             }
         }
     }
