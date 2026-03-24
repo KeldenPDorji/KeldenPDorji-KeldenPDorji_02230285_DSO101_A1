@@ -12,8 +12,8 @@
 3. [Project Structure](#project-structure)
 4. [Environment Variables](#environment-variables)
 5. [Running Locally](#running-locally)
-6. [Part A — Docker Hub & Render Deployment](#part-a--docker-hub--render-deployment)
-7. [Part B — Automated Git-Based Deployment (Blueprint)](#part-b--automated-git-based-deployment-blueprint)
+6. [Part A - Docker Hub & Render Deployment](#part-a--docker-hub--render-deployment)
+7. [Part B - Automated Git-Based Deployment (Blueprint)](#part-b--automated-git-based-deployment-blueprint)
 8. [Assignment 2: Jenkins CI/CD Pipeline](#assignment-2-jenkins-cicd-pipeline)
 
 ---
@@ -97,7 +97,7 @@ REACT_APP_API_URL=http://localhost:5000
 
 ## Running Locally
 
-### Option A — Docker Compose *(recommended)*
+### Option A - Docker Compose *(recommended)*
 
 ```bash
 docker-compose up --build
@@ -109,7 +109,7 @@ docker-compose up --build
 | Backend  | http://localhost:5000  |
 | Database | localhost:5432         |
 
-### Option B — Manual (without Docker)
+### Option B - Manual (without Docker)
 
 ```bash
 # 1. Start the backend
@@ -127,9 +127,9 @@ npm start
 
 ---
 
-## Part A — Docker Hub & Render Deployment
+## Part A - Docker Hub & Render Deployment
 
-### Step 1 — Build and Push Docker Images
+### Step 1 - Build and Push Docker Images
 
 Multi-platform images are built for `linux/amd64` to ensure compatibility with Render's infrastructure.
 
@@ -153,21 +153,21 @@ docker buildx build \
 
 The student ID `02230285` is used as the image tag as required by the assignment.
 
-### Step 2 — Docker Hub Images
+### Step 2 - Docker Hub Images
 
 Both images are publicly available on Docker Hub.
 
-![Docker Hub — Backend Image](screenshots/dockerhub-backend.png)
+![Docker Hub - Backend Image](screenshots/a1/dockerhub-backend.png)
 
-![Docker Hub — Frontend Image](screenshots/dockerhub-frontend.png)
+![Docker Hub - Frontend Image](screenshots/a1/dockerhub-frontend.png)
 
-### Step 3 — Provision PostgreSQL on Render
+### Step 3 - Provision PostgreSQL on Render
 
 A managed PostgreSQL database is created through the Render dashboard. The internal connection credentials are then copied into the backend service's environment variable configuration — they are **not stored in this repository**.
 
-![Render — PostgreSQL Database](screenshots/render-database.png)
+![Render - PostgreSQL Database](screenshots/a1/render-database.png)
 
-### Step 4 — Deploy Backend Web Service on Render
+### Step 4 - Deploy Backend Web Service on Render
 
 A new **Web Service** is created using the **"Existing image from Docker Hub"** option.
 
@@ -185,9 +185,9 @@ The following environment variables are configured securely via the Render dashb
 | `DB_SSL`      | `true`                                           |
 | `PORT`        | `5000`                                           |
 
-![Render — Backend Service](screenshots/render-backend-service.png)
+![Render - Backend Service](screenshots/a1/render-backend-service.png)
 
-### Step 5 — Deploy Frontend Web Service on Render
+### Step 5 - Deploy Frontend Web Service on Render
 
 A second **Web Service** is created using the frontend image.
 
@@ -199,11 +199,11 @@ A second **Web Service** is created using the frontend image.
 
 > **Note:** Because React environment variables are embedded at build time (compile-time), `REACT_APP_API_URL` is injected via `--build-arg` during the `docker build` step. The variable set on Render serves as a reference record only.
 
-![Render — Frontend Service](screenshots/render-frontend-service.png)
+![Render - Frontend Service](screenshots/a1/render-frontend-service.png)
 
-### Step 6 — Live Application
+### Step 6 - Live Application
 
-![Live Todo App](screenshots/live-app.png)
+![Live Todo App](screenshots/a1/live-app.png)
 
 | Service  | Live URL                              |
 |----------|---------------------------------------|
@@ -212,7 +212,7 @@ A second **Web Service** is created using the frontend image.
 
 ---
 
-## Part B — Automated Git-Based Deployment (Blueprint)
+## Part B - Automated Git-Based Deployment (Blueprint)
 
 A `render.yaml` Blueprint file at the repository root defines the complete multi-service deployment. Every `git push` to the `main` branch automatically triggers a Blueprint sync and redeploys all services.
 
@@ -251,18 +251,18 @@ services:
 ### Blueprint Setup Steps
 
 1. Push the repository to GitHub.
-2. On Render, go to **New → Blueprint**.
+2. On Render, go to **New - Blueprint**.
 3. Connect the GitHub repository — Render automatically detects `render.yaml`.
 4. Select **"Associate existing services"** to link to previously created services.
 5. Click **"Apply Blueprint"** to finalise the configuration.
 
-![Render — Blueprint](screenshots/render-blueprint.png)
+![Render - Blueprint](screenshots/a1/render-blueprint.png)
 
 ### Continuous Deployment on Git Push
 
 With `autoDeploy: true` set for both services, every commit pushed to `main` triggers an automatic redeploy. The screenshot below shows the deployment log following a `git push`.
 
-![Render — Auto Deploy on git push](screenshots/render-autodeploy.png)
+![Render - Auto Deploy on git push](screenshots/a1/render-autodeploy.png)
 
 ---
 
@@ -286,74 +286,76 @@ With `autoDeploy: true` set for both services, every commit pushed to `main` tri
 ## Assignment 2: Jenkins CI/CD Pipeline
 
 ### Overview
-An automated CI/CD pipeline using Jenkins that builds, tests, and deploys the Todo application.
 
-### Pipeline Stages
-The Jenkinsfile defines 8 automated stages:
+An automated CI/CD pipeline was configured using Jenkins to build, test, and deploy the Todo List application. The pipeline pulls source code from GitHub, installs dependencies, runs unit tests, builds Docker images, and pushes them to Docker Hub.
 
-1. **Checkout** - Clone code from GitHub using PAT credentials
-2. **Install Backend Dependencies** - npm install for Node.js backend + Jest
-3. **Install Frontend Dependencies** - npm install for React frontend
-4. **Build Frontend** - Create optimized React production build
-5. **Test Backend** - Run Jest unit tests with JUnit reporting
-6. **Build Docker Images** - Build Docker images for backend and frontend
-7. **Push to Docker Hub** - Push images to Docker registry
-8. **Deploy** - Placeholder for deployment configuration
+### Step 1 - Jenkins Setup & Plugin Configuration
 
-### Setup Instructions
+Jenkins was installed via Homebrew on macOS and accessed at `localhost:8080`. Required plugins — NodeJS, Pipeline, GitHub Integration, Docker Pipeline, and JUnit — were installed manually via `.hpi` files due to network restrictions on the university network. Node.js was configured by setting the `PATH` environment variable inside the `Jenkinsfile` to point to the nvm-managed binary.
 
-#### Prerequisites
-- Jenkins installed and running on `localhost:8080`
-- GitHub repository with this code
-- Node.js v18+ and npm installed
+### Step 2 - GitHub & Docker Hub Credentials
 
-#### Step 1: Generate GitHub PAT
-1. Go to GitHub Settings → Developer Settings → Personal Access Tokens
-2. Create new token with `repo` and `admin:repo_hook` scopes
-3. Copy and save the token securely
+GitHub and Docker Hub credentials were stored securely in Jenkins' credential store using Personal Access Tokens — never hardcoded in any file.
 
-#### Step 2: Add Credentials to Jenkins
-1. Manage Jenkins → Credentials → System → Global credentials
-2. Add credentials: Username & password
-   - Username: Your GitHub username
-   - Password: Your GitHub PAT
-   - ID: `github-pat`
+### Step 3 - Pipeline Configuration
 
-#### Step 3: Create Pipeline Job
-1. Jenkins Dashboard → New Item → Pipeline
-2. Configure:
-   - Definition: Pipeline script from SCM
-   - SCM: Git
-   - Repository URL: Your GitHub repo URL
-   - Credentials: Select `github-pat`
-   - Script Path: `Jenkinsfile`
-3. Save and "Build Now"
+A `Jenkinsfile` was created at the repository root using declarative syntax. The pipeline was connected to the GitHub repository via **Pipeline script from SCM**, with the credential ID `github-pat`.
 
-### Testing
-Run tests locally before Jenkins:
-```bash
-cd todo-app/backend
-npm install
-npm test
-```
+The `Jenkinsfile` defines 8 automated stages:
 
-### Test Results
-- **Total Tests:** 6
-- **Passing:** 6 (100%)
-- **Framework:** Jest
-- **Report Format:** JUnit XML (visible in Jenkins)
+| Stage | Description |
+|-------|-------------|
+| **Checkout** | Clones the repository from GitHub using a Personal Access Token |
+| **Install Backend Dependencies** | Runs `npm install` for the Node.js backend, including Jest and jest-junit |
+| **Install Frontend Dependencies** | Runs `npm install` for the React frontend |
+| **Build Frontend** | Produces an optimized production build via `react-scripts build` |
+| **Test Backend** | Executes 6 Jest unit tests with JUnit XML reporting for Jenkins |
+| **Build Docker Images** | Builds `todo-backend:latest` and `todo-frontend:latest` Docker images |
+| **Push to Docker Hub** | Authenticates and pushes both images to `sevenkels` on Docker Hub |
+| **Deploy** | Confirms successful deployment with image tags |
+
+### Step 4 - Running the Pipeline
+
+The pipeline was triggered manually via **Build Now** in the Jenkins dashboard.
+
+![Jenkins Pipeline - Build History and Test Result Trend](screenshots/a2/jenkins-pipeline-overview.png)
+
+Build #11 completed successfully with all 8 stages passing in 1 minute 13 seconds.
+
+![Jenkins Build #11 - Successful Execution](screenshots/a2/jenkins-build-success.png)
+
+### Step 5 - Test Results
+
+Jest unit tests were run against the backend with JUnit XML reporting, making results visible directly in Jenkins.
+
+![Jenkins - Backend Test Results](screenshots/a2/jenkins-test-results.png)
+
+| Metric | Result |
+|--------|--------|
+| Total Tests | 6 |
+| Passed | 6 |
+| Failed | 0 |
+| Framework | Jest |
+| Report Format | JUnit XML |
+
+The console output confirms all stages completed without errors.
+
+![Jenkins - Console Output](screenshots/a2/jenkins-console-output.png)
+
+### Step 6 - Docker Hub Deployment
+
+Both images were successfully pushed to the `sevenkels` namespace on Docker Hub under the `a2` tag.
+
+- `sevenkels/be-todo:a2`
+- `sevenkels/fe-todo:a2`
 
 ### Challenges Faced
-- Setting up Jenkins credentials securely without exposing PAT tokens
-- Configuring Jest to work in CI mode with JUnit reporting
-- Ensuring Docker build stages complete within reasonable timeframe
 
-### Technologies Used
-- **Jenkins** - CI/CD automation
-- **GitHub** - Source code hosting
-- **Jest** - Unit testing framework
-- **Docker** - Application containerization
-- **Node.js** - Runtime for backend
+- **Plugin installation failures** - The university network blocked Jenkins from downloading plugins from the update centre. This was resolved by downloading `.hpi` files manually via browser and uploading them through the Jenkins UI.
+- **Node.js not found** - Jenkins could not locate the `npm` binary because Node.js was installed via `nvm`, which is not loaded in non-interactive shells. This was fixed by explicitly adding the nvm binary path to the `PATH` environment variable in the `Jenkinsfile`.
+- **Jest test path error** - The test file referenced `../package.json` but was already inside the `backend` directory. The path was corrected to `./package.json`.
+- **Frontend test stage failure** - The React frontend had no test files, causing Jest to exit with code 1. This was resolved by passing the `--passWithNoTests` flag.
+- **Docker daemon not running** - The Docker build stage failed because Docker Desktop was not running. Starting Docker Desktop resolved the issue.
 
 ---
 
@@ -362,6 +364,6 @@ npm test
 - [Docker Documentation](https://docs.docker.com/)
 - [Render Documentation](https://render.com/docs)
 - [Render Blueprint Spec](https://render.com/docs/blueprint-spec)
-- [Render — Deploy from Docker Hub](https://render.com/docs/deploying-an-image)
+- [Render - Deploy from Docker Hub](https://render.com/docs/deploying-an-image)
 - [Jenkins Documentation](https://www.jenkins.io/doc/)
 - [Jest Testing Framework](https://jestjs.io/)
