@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        PATH = "/Users/keldendrac/.nvm/versions/node/v24.11.1/bin:${env.PATH}"
+        PATH = "/Users/keldendrac/.nvm/versions/node/v24.11.1/bin:/usr/local/bin:${env.PATH}"
     }
     
     stages {
@@ -78,7 +78,7 @@ EOF
             steps {
                 echo '=== Running frontend tests ==='
                 dir('todo-app/frontend') {
-                    sh 'CI=true npm test -- --watchAll=false 2>&1 || true'
+                    sh 'CI=true npm test -- --watchAll=false --passWithNoTests || true'
                 }
             }
         }
