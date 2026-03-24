@@ -1,12 +1,6 @@
 pipeline {
     agent any
     
-    environment {
-        DOCKER_HUB_USERNAME = credentials('docker-hub-username')
-        DOCKER_HUB_PASSWORD = credentials('docker-hub-password')
-        GITHUB_PAT = credentials('github-pat')
-    }
-    
     stages {
         // Stage 1: Checkout Code
         stage('Checkout') {
@@ -15,7 +9,7 @@ pipeline {
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
-                    userRemoteConfigs: [[url: 'https://github.com/yourusername/assignment1-node-app.git']]
+                    userRemoteConfigs: [[url: 'https://github.com/KeldenPDorji/KeldenPDorji_02230285_DSO101_A1.git']]
                 ])
             }
         }
@@ -104,17 +98,9 @@ EOF
         // Stage 7: Push to Docker Hub
         stage('Push to Docker Hub') {
             steps {
-                echo '=== Pushing images to Docker Hub ==='
-                script {
-                    sh '''
-                        echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-                        docker tag todo-backend:latest $DOCKER_HUB_USERNAME/todo-backend:latest
-                        docker tag todo-frontend:latest $DOCKER_HUB_USERNAME/todo-frontend:latest
-                        docker push $DOCKER_HUB_USERNAME/todo-backend:latest
-                        docker push $DOCKER_HUB_USERNAME/todo-frontend:latest
-                        docker logout
-                    '''
-                }
+                echo '=== Pushing images to Docker Hub (optional) ==='
+                echo 'Configure Docker Hub credentials in Jenkins to enable pushing'
+                echo 'Credentials ID needed: docker-hub-username and docker-hub-password'
             }
         }
         
@@ -132,7 +118,6 @@ EOF
     post {
         always {
             echo '=== Pipeline Execution Complete ==='
-            cleanWs()
         }
         success {
             echo '✓ Pipeline executed successfully!'
