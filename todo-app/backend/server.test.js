@@ -23,7 +23,7 @@ describe('Express Server Configuration', () => {
 
 describe('Basic Server Setup', () => {
     test('all required dependencies are installed', () => {
-        const packageJson = require('../package.json');
+        const packageJson = require('./package.json');
         expect(packageJson.dependencies.express).toBeDefined();
         expect(packageJson.dependencies.cors).toBeDefined();
         expect(packageJson.dependencies.pg).toBeDefined();
@@ -31,7 +31,7 @@ describe('Basic Server Setup', () => {
     });
 
     test('package.json has required scripts', () => {
-        const packageJson = require('../package.json');
+        const packageJson = require('./package.json');
         expect(packageJson.scripts.start).toBeDefined();
         expect(packageJson.scripts.test).toBeDefined();
     });

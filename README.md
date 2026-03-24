@@ -14,6 +14,7 @@
 5. [Running Locally](#running-locally)
 6. [Part A — Docker Hub & Render Deployment](#part-a--docker-hub--render-deployment)
 7. [Part B — Automated Git-Based Deployment (Blueprint)](#part-b--automated-git-based-deployment-blueprint)
+8. [Assignment 2: Jenkins CI/CD Pipeline](#assignment-2-jenkins-cicd-pipeline)
 
 ---
 
@@ -282,9 +283,85 @@ With `autoDeploy: true` set for both services, every commit pushed to `main` tri
 
 ---
 
+## Assignment 2: Jenkins CI/CD Pipeline
+
+### Overview
+An automated CI/CD pipeline using Jenkins that builds, tests, and deploys the Todo application.
+
+### Pipeline Stages
+The Jenkinsfile defines 8 automated stages:
+
+1. **Checkout** - Clone code from GitHub using PAT credentials
+2. **Install Backend Dependencies** - npm install for Node.js backend + Jest
+3. **Install Frontend Dependencies** - npm install for React frontend
+4. **Build Frontend** - Create optimized React production build
+5. **Test Backend** - Run Jest unit tests with JUnit reporting
+6. **Build Docker Images** - Build Docker images for backend and frontend
+7. **Push to Docker Hub** - Push images to Docker registry
+8. **Deploy** - Placeholder for deployment configuration
+
+### Setup Instructions
+
+#### Prerequisites
+- Jenkins installed and running on `localhost:8080`
+- GitHub repository with this code
+- Node.js v18+ and npm installed
+
+#### Step 1: Generate GitHub PAT
+1. Go to GitHub Settings → Developer Settings → Personal Access Tokens
+2. Create new token with `repo` and `admin:repo_hook` scopes
+3. Copy and save the token securely
+
+#### Step 2: Add Credentials to Jenkins
+1. Manage Jenkins → Credentials → System → Global credentials
+2. Add credentials: Username & password
+   - Username: Your GitHub username
+   - Password: Your GitHub PAT
+   - ID: `github-pat`
+
+#### Step 3: Create Pipeline Job
+1. Jenkins Dashboard → New Item → Pipeline
+2. Configure:
+   - Definition: Pipeline script from SCM
+   - SCM: Git
+   - Repository URL: Your GitHub repo URL
+   - Credentials: Select `github-pat`
+   - Script Path: `Jenkinsfile`
+3. Save and "Build Now"
+
+### Testing
+Run tests locally before Jenkins:
+```bash
+cd todo-app/backend
+npm install
+npm test
+```
+
+### Test Results
+- **Total Tests:** 6
+- **Passing:** 6 (100%)
+- **Framework:** Jest
+- **Report Format:** JUnit XML (visible in Jenkins)
+
+### Challenges Faced
+- Setting up Jenkins credentials securely without exposing PAT tokens
+- Configuring Jest to work in CI mode with JUnit reporting
+- Ensuring Docker build stages complete within reasonable timeframe
+
+### Technologies Used
+- **Jenkins** - CI/CD automation
+- **GitHub** - Source code hosting
+- **Jest** - Unit testing framework
+- **Docker** - Application containerization
+- **Node.js** - Runtime for backend
+
+---
+
 ## Resources
 
 - [Docker Documentation](https://docs.docker.com/)
 - [Render Documentation](https://render.com/docs)
 - [Render Blueprint Spec](https://render.com/docs/blueprint-spec)
 - [Render — Deploy from Docker Hub](https://render.com/docs/deploying-an-image)
+- [Jenkins Documentation](https://www.jenkins.io/doc/)
+- [Jest Testing Framework](https://jestjs.io/)
