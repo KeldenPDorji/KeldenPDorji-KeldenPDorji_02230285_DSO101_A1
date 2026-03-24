@@ -1,9 +1,7 @@
-# DSO101 Assignment 1 - Containerisation & CI/CD Pipeline
+# DSO101 - Containerisation & CI/CD Pipeline
 
-> **Course:** DSO101 — Continuous Integration and Continuous Deployment  
+> **Course:** DSO101 - Continuous Integration and Continuous Deployment  
 > **Programme:** Bachelor of Engineering in Software Engineering (SWE)  
-
----
 
 ## Table of Contents
 
@@ -16,19 +14,15 @@
 7. [Part B - Automated Git-Based Deployment (Blueprint)](#part-b--automated-git-based-deployment-blueprint)
 8. [Assignment 2: Jenkins CI/CD Pipeline](#assignment-2-jenkins-cicd-pipeline)
 
----
-
 ## Overview
 
 A full-stack **Todo List** web application built to demonstrate containerisation and CI/CD principles. The application supports creating, editing, completing, and deleting tasks, backed by a persistent PostgreSQL database.
 
 | Component | Responsibility |
 |-----------|---------------|
-| **Frontend** | React SPA — task UI (add / edit / delete / complete) |
+| **Frontend** | React SPA - task UI (add / edit / delete / complete) |
 | **Backend**  | Node.js/Express REST API with full CRUD endpoints |
-| **Database** | PostgreSQL — persistent task storage |
-
----
+| **Database** | PostgreSQL - persistent task storage |
 
 ## Tech Stack
 
@@ -40,8 +34,6 @@ A full-stack **Todo List** web application built to demonstrate containerisation
 | Serving  | Nginx (frontend container) |
 | Registry | Docker Hub              |
 | Hosting  | Render.com              |
-
----
 
 ## Project Structure
 
@@ -67,8 +59,6 @@ studentname_sudentnumber_DSO101_A1/
 └── README.md
 ```
 
----
-
 ## Environment Variables
 
 Sensitive configuration is **never committed to Git**. Both services consume environment variables at runtime.
@@ -92,8 +82,6 @@ REACT_APP_API_URL=http://localhost:5000
 ```
 
 > ⚠️ **Never commit `.env` files to version control.** They are listed in `.gitignore`. On Render, all secrets are injected via the dashboard's **Environment Variables** panel, not stored in code.
-
----
 
 ## Running Locally
 
@@ -163,7 +151,7 @@ Both images are publicly available on Docker Hub.
 
 ### Step 3 - Provision PostgreSQL on Render
 
-A managed PostgreSQL database is created through the Render dashboard. The internal connection credentials are then copied into the backend service's environment variable configuration — they are **not stored in this repository**.
+A managed PostgreSQL database is created through the Render dashboard. The internal connection credentials are then copied into the backend service's environment variable configuration - they are **not stored in this repository**.
 
 ![Render - PostgreSQL Database](screenshots/a1/render-database.png)
 
@@ -230,7 +218,7 @@ services:
     autoDeploy: true
     envVars:
       - key: DB_HOST
-        value: <set via Render dashboard — not stored in repo>
+        value: <set via Render dashboard - not stored in repo>
       - key: PORT
         value: 5000
       # Additional DB credentials are set via the Render dashboard
@@ -252,7 +240,7 @@ services:
 
 1. Push the repository to GitHub.
 2. On Render, go to **New - Blueprint**.
-3. Connect the GitHub repository — Render automatically detects `render.yaml`.
+3. Connect the GitHub repository - Render automatically detects `render.yaml`.
 4. Select **"Associate existing services"** to link to previously created services.
 5. Click **"Apply Blueprint"** to finalise the configuration.
 
@@ -263,8 +251,6 @@ services:
 With `autoDeploy: true` set for both services, every commit pushed to `main` triggers an automatic redeploy. The screenshot below shows the deployment log following a `git push`.
 
 ![Render - Auto Deploy on git push](screenshots/a1/render-autodeploy.png)
-
----
 
 ## Environment Variables
 
@@ -281,8 +267,6 @@ With `autoDeploy: true` set for both services, every commit pushed to `main` tri
 
 > ⚠️ `.env` files are listed in `.gitignore` and are never committed.
 
----
-
 ## Assignment 2: Jenkins CI/CD Pipeline
 
 ### Overview
@@ -291,11 +275,11 @@ An automated CI/CD pipeline was configured using Jenkins to build, test, and dep
 
 ### Step 1 - Jenkins Setup & Plugin Configuration
 
-Jenkins was installed via Homebrew on macOS and accessed at `localhost:8080`. Required plugins — NodeJS, Pipeline, GitHub Integration, Docker Pipeline, and JUnit — were installed manually via `.hpi` files due to network restrictions on the university network. Node.js was configured by setting the `PATH` environment variable inside the `Jenkinsfile` to point to the nvm-managed binary.
+Jenkins was installed via Homebrew on macOS and accessed at `localhost:8080`. Required plugins - NodeJS, Pipeline, GitHub Integration, Docker Pipeline, and JUnit - were installed manually via `.hpi` files due to network restrictions on the university network. Node.js was configured by setting the `PATH` environment variable inside the `Jenkinsfile` to point to the nvm-managed binary.
 
 ### Step 2 - GitHub & Docker Hub Credentials
 
-GitHub and Docker Hub credentials were stored securely in Jenkins' credential store using Personal Access Tokens — never hardcoded in any file.
+GitHub and Docker Hub credentials were stored securely in Jenkins' credential store using Personal Access Tokens - never hardcoded in any file.
 
 ### Step 3 - Pipeline Configuration
 
@@ -356,8 +340,6 @@ Both images were successfully pushed to the `sevenkels` namespace on Docker Hub 
 - **Jest test path error** - The test file referenced `../package.json` but was already inside the `backend` directory. The path was corrected to `./package.json`.
 - **Frontend test stage failure** - The React frontend had no test files, causing Jest to exit with code 1. This was resolved by passing the `--passWithNoTests` flag.
 - **Docker daemon not running** - The Docker build stage failed because Docker Desktop was not running. Starting Docker Desktop resolved the issue.
-
----
 
 ## Resources
 
